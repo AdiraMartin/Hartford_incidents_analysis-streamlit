@@ -1,6 +1,6 @@
 streamlit 
 pandas
 numpy
-plotly.express as
+plotly.express
 altair
 plotly.graph_objects
