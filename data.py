@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 
 st.title("bentar mikir dulu 👮")
 
-data = pd.read_csv(r'C:\Users\user\STREAMLIT\Final_Police_Incidents_2021-May2023.csv')
+data = pd.read_csv('Final_Police_Incidents_2021-May2023.csv')
 
 incidents = data[~data['Neighborhood'].isnull()]
 
@@ -120,7 +120,7 @@ else:
 
 
     # Kotak Top Crimes
-    top_crime = pd.read_csv(r'C:\Users\user\STREAMLIT\top_crime.csv')
+    top_crime = pd.read_csv('top_crime.csv')
 
     if pressed and characteristics == 'Yes' and selected_neighborhoods != 'All':
         selected_top_crime = top_crime[top_crime['Neighborhood'] == selected_neighborhoods]
