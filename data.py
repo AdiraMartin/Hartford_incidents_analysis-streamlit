@@ -62,7 +62,7 @@ else:
     # Density Map Tab
     with tabs[1]:
         st.header("Density Map")
-        st.info("The density map provides a visual representation of the intensity and distribution of crime incidents across the geographic area. Lighter areas indicate higher concentrations of incidents, while Darker or more saturated areas indicate lower concentrations. This information can help identify crime hotspots and areas of concern.")
+        st.info("The density map provides a visual representation of the intensity and distribution of crime incidents across the geographic area. Lighter areas indicate higher concentrations of incidents, while Darker or more saturated areas indicate lower concentrations. This information can help identify crime hotspots and areas of concern. **Zoom in to explore specific areas**")
 
         fig = px.density_mapbox(aggregated_data, lat='Lat', lon='Long', z='cases', radius=40,
                             center=dict(lat=41.7637, lon=-72.6851), zoom=11,
@@ -75,7 +75,7 @@ else:
     # Scatter Plot Tab
     with tabs[0]:
         st.header('Scatter Plot')
-        st.info("The scatter plot displays individual crime incidents as data points on a map. Each point represents a specific incident location. This visualization provides a detailed view of the spatial distribution of crime incidents and allows for a closer examination of individual data points.")
+        st.info("The scatter plot displays individual crime incidents as data points on a map. Each point represents a specific incident location. This visualization provides a detailed view of the spatial distribution of crime incidents and allows for a closer examination of individual data points.**Zoom in to explore the detail**")
         aggregated_data = filtered_data.groupby(['Lat', 'Long']).size().reset_index(name='cases')
 
         fig_scatter = go.Figure()
