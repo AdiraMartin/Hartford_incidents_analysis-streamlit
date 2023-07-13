@@ -5,7 +5,7 @@ import plotly.express as px
 import altair as alt
 import plotly.graph_objects as go
 
-
+st.set_page_config(page_title='Incidents Analysis in Hartford',  layout='wide', page_icon='👮')
 st.title("Incidents Analysis in Hartford, Connecticut: Patterns and Trends from May 2021 to June 2023👮")
 
 data = pd.read_csv('Final_Police_Incidents_2021-May2023.csv')
