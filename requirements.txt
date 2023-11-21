@@ -5,5 +5,4 @@ plotly==5.3.1
 altair==4.1.0
 folium==0.13.0
 streamlit-folium==0.6.1
-
 git+https://github.com/AdiraMartin/Hartford_incidents_analysis-streamlit.git
