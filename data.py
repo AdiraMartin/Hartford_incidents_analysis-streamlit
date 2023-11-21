@@ -4,8 +4,6 @@ import numpy as np
 import plotly.express as px
 import altair as alt
 import plotly.graph_objects as go
-import folium
-from streamlit_folium import folium_static
 
 st.set_page_config(page_title='Incidents Analysis in Hartford',  layout='wide', page_icon=':police_car:')
 st.title("Incidents Analysis in Hartford, Connecticut: Patterns and Trends from May 2021 to June 2023👮")
@@ -66,33 +64,43 @@ else:
         st.header("Density Map")
         st.info("The density map provides a visual representation of the intensity and distribution of crime incidents across the geographic area. Lighter areas indicate higher concentrations of incidents, while Darker or more saturated areas indicate lower concentrations. This information can help identify crime hotspots and areas of concern. **Zoom in to explore specific areas**.")
     
-        # Create a Folium Map
-        m = folium.Map(location=[41.7637, -72.6851], zoom_start=11, tiles="Stamen Terrain")
     
-        # Add HeatMap layer
-        heat_data = list(zip(aggregated_data['Lat'], aggregated_data['Long'], aggregated_data['cases']))
-        folium.plugins.HeatMap(heat_data, radius=40).add_to(m)
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.basemap import Basemap
     
-        # Display the Folium Map
-        folium_static(m)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        m = Basemap(projection='merc', llcrnrlat=41.5, urcrnrlat=42, llcrnrlon=-72.8, urcrnrlon=-72.6, resolution='h')
+        m.drawcoastlines()
+        m.drawcountries()
+        m.drawmapboundary(fill_color='aqua')
+        m.drawparallels(np.arange(41.5, 42, 0.1), labels=[1, 0, 0, 0])
+        m.drawmeridians(np.arange(-72.8, -72.6, 0.1), labels=[0, 0, 0, 1])
+    
+        # Plot data points on the map
+        m.scatter(aggregated_data['Long'], aggregated_data['Lat'], latlon=True, s=aggregated_data['cases'], c='red', alpha=0.7)
+    
+        st.pyplot(fig)
+    
 
     # Scatter Plot Tab
     with tabs[0]:
         st.header('Scatter Plot')
         st.info("The scatter plot displays individual crime incidents as data points on a map. Each point represents a specific incident location. This visualization provides a detailed view of the spatial distribution of crime incidents and allows for a closer examination of individual data points. **Zoom in to explore the detail**.")
+        aggregated_data = filtered_data.groupby(['Lat', 'Long']).size().reset_index(name='cases')
+        
+        fig, ax = plt.subplots(figsize=(10, 8))
+        m = Basemap(projection='merc', llcrnrlat=41.5, urcrnrlat=42, llcrnrlon=-72.8, urcrnrlon=-72.6, resolution='h')
+        m.drawcoastlines()
+        m.drawcountries()
+        m.drawmapboundary(fill_color='aqua')
+        m.drawparallels(np.arange(41.5, 42, 0.1), labels=[1, 0, 0, 0])
+        m.drawmeridians(np.arange(-72.8, -72.6, 0.1), labels=[0, 0, 0, 1])
     
-        # Create a Folium Map
-        m_scatter = folium.Map(location=[41.7637, -72.6851], zoom_start=11, tiles="Stamen Terrain")
+        # Plot data points on the map
+        m.scatter(aggregated_data['Long'], aggregated_data['Lat'], latlon=True, s=aggregated_data['cases'], c='blue', alpha=0.7)
     
-        # Add Marker cluster layer
-        marker_cluster = folium.plugins.MarkerCluster().add_to(m_scatter)
-    
-        # Add markers for each incident
-        for lat, lon, cases in zip(aggregated_data['Lat'], aggregated_data['Long'], aggregated_data['cases']):
-            folium.Marker(location=[lat, lon], popup=f'Cases: {cases}').add_to(marker_cluster)
-    
-        # Display the Folium Map
-        folium_static(m_scatter)
+        st.pyplot(fig)
+
 
     # Kotak Total Incidents
 
