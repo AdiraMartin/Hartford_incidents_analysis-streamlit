@@ -4,6 +4,8 @@ import numpy as np
 import plotly.express as px
 import altair as alt
 import plotly.graph_objects as go
+import folium
+from folium.plugins import HeatMap
 
 st.set_page_config(page_title='Incidents Analysis in Hartford',  layout='wide', page_icon=':police_car:')
 st.title("Incidents Analysis in Hartford, Connecticut: Patterns and Trends from May 2021 to June 2023👮")
@@ -64,47 +66,24 @@ else:
         st.header("Density Map")
         st.info("The density map provides a visual representation of the intensity and distribution of crime incidents across the geographic area. Lighter areas indicate higher concentrations of incidents, while Darker or more saturated areas indicate lower concentrations. This information can help identify crime hotspots and areas of concern. **Zoom in to explore specific areas**.")
 
-        fig = px.density_mapbox(aggregated_data, lat='Lat', lon='Long', z='cases', radius=40,
-                            center=dict(lat=41.7637, lon=-72.6851), zoom=11,
-                            mapbox_style="stamen-terrain", width=800, height=600,
-                            color_continuous_scale="hot")
+        m = folium.Map(location=[41.7637, -72.6851], zoom_start=11, tiles='Stamen Terrain')
 
-        st.plotly_chart(fig)
+        heat_data = [[row['Lat'], row['Long'], row['cases']] for index, row in aggregated_data.iterrows()]
+        HeatMap(heat_data).add_to(m)
 
+        folium_static(m)
 
     # Scatter Plot Tab
     with tabs[0]:
         st.header('Scatter Plot')
         st.info("The scatter plot displays individual crime incidents as data points on a map. Each point represents a specific incident location. This visualization provides a detailed view of the spatial distribution of crime incidents and allows for a closer examination of individual data points. **Zoom in to explore the detail**.")
-        aggregated_data = filtered_data.groupby(['Lat', 'Long']).size().reset_index(name='cases')
 
-        fig_scatter = go.Figure()
-        fig_scatter.add_trace(
-            go.Scattermapbox(
-                lat=aggregated_data['Lat'],
-                lon=aggregated_data['Long'],
-                mode='markers',
-                marker=dict(
-                    size=8,
-                    color='blue',
-                    opacity=0.8
-                ),
-                text=aggregated_data['cases'],
-                hoverinfo='text'
-            )
-        )
-        fig_scatter.update_layout(
-            mapbox=dict(
-                style="stamen-terrain",
-                center=dict(lat=41.7637, lon=-72.6851),
-                zoom=11
-            ),
-            width=700,
-            height=600
-        )
+        m_scatter = folium.Map(location=[41.7637, -72.6851], zoom_start=11, tiles='Stamen Terrain')
 
-        st.plotly_chart(fig_scatter)
+        for index, row in aggregated_data.iterrows():
+            folium.CircleMarker(location=[row['Lat'], row['Long']], radius=8, color='blue', fill=True, fill_color='blue', fill_opacity=0.8).add_to(m_scatter)
 
+        folium_static(m_scatter)
 
     # Kotak Total Incidents
 
