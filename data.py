@@ -63,43 +63,47 @@ else:
     with tabs[1]:
         st.header("Density Map")
         st.info("The density map provides a visual representation of the intensity and distribution of crime incidents across the geographic area. Lighter areas indicate higher concentrations of incidents, while Darker or more saturated areas indicate lower concentrations. This information can help identify crime hotspots and areas of concern. **Zoom in to explore specific areas**.")
-    
-    
-        import matplotlib.pyplot as plt
-        from mpl_toolkits.basemap import Basemap
-    
-        fig, ax = plt.subplots(figsize=(10, 8))
-        m = Basemap(projection='merc', llcrnrlat=41.5, urcrnrlat=42, llcrnrlon=-72.8, urcrnrlon=-72.6, resolution='h')
-        m.drawcoastlines()
-        m.drawcountries()
-        m.drawmapboundary(fill_color='aqua')
-        m.drawparallels(np.arange(41.5, 42, 0.1), labels=[1, 0, 0, 0])
-        m.drawmeridians(np.arange(-72.8, -72.6, 0.1), labels=[0, 0, 0, 1])
-    
-        # Plot data points on the map
-        m.scatter(aggregated_data['Long'], aggregated_data['Lat'], latlon=True, s=aggregated_data['cases'], c='red', alpha=0.7)
-    
-        st.pyplot(fig)
-    
+
+        fig = px.density_mapbox(aggregated_data, lat='Lat', lon='Long', z='cases', radius=40,
+                            center=dict(lat=41.7637, lon=-72.6851), zoom=11,
+                            mapbox_style="stamen-terrain", width=800, height=600,
+                            color_continuous_scale="hot")
+
+        st.plotly_chart(fig)
+
 
     # Scatter Plot Tab
     with tabs[0]:
         st.header('Scatter Plot')
         st.info("The scatter plot displays individual crime incidents as data points on a map. Each point represents a specific incident location. This visualization provides a detailed view of the spatial distribution of crime incidents and allows for a closer examination of individual data points. **Zoom in to explore the detail**.")
         aggregated_data = filtered_data.groupby(['Lat', 'Long']).size().reset_index(name='cases')
-        
-        fig, ax = plt.subplots(figsize=(10, 8))
-        m = Basemap(projection='merc', llcrnrlat=41.5, urcrnrlat=42, llcrnrlon=-72.8, urcrnrlon=-72.6, resolution='h')
-        m.drawcoastlines()
-        m.drawcountries()
-        m.drawmapboundary(fill_color='aqua')
-        m.drawparallels(np.arange(41.5, 42, 0.1), labels=[1, 0, 0, 0])
-        m.drawmeridians(np.arange(-72.8, -72.6, 0.1), labels=[0, 0, 0, 1])
-    
-        # Plot data points on the map
-        m.scatter(aggregated_data['Long'], aggregated_data['Lat'], latlon=True, s=aggregated_data['cases'], c='blue', alpha=0.7)
-    
-        st.pyplot(fig)
+
+        fig_scatter = go.Figure()
+        fig_scatter.add_trace(
+            go.Scattermapbox(
+                lat=aggregated_data['Lat'],
+                lon=aggregated_data['Long'],
+                mode='markers',
+                marker=dict(
+                    size=8,
+                    color='blue',
+                    opacity=0.8
+                ),
+                text=aggregated_data['cases'],
+                hoverinfo='text'
+            )
+        )
+        fig_scatter.update_layout(
+            mapbox=dict(
+                style="stamen-terrain",
+                center=dict(lat=41.7637, lon=-72.6851),
+                zoom=11
+            ),
+            width=700,
+            height=600
+        )
+
+        st.plotly_chart(fig_scatter)
 
 
     # Kotak Total Incidents
