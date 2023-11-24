@@ -4,5 +4,3 @@ numpy
 plotly
 altair
 matplotlib
-
-
